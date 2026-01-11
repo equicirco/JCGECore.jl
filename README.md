@@ -1,7 +1,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/src/assets/jcge_core_logo_dark.png">
   <source media="(prefers-color-scheme: light)" srcset="docs/src/assets/jcge_core_logo_light.png">
-  <img alt="JCGE Core logo" src="docs/src/assets/jcge_core_logo_light.png" height="150" align="left">
+  <img alt="JCGE Core logo" src="docs/src/assets/jcge_core_logo_light.png" height="150">
 </picture>
 
 # JCGECore.jl
