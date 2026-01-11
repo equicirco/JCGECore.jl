@@ -1,9 +1,10 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/src/assets/jcge_core_logo_dark.png">
-  <img src="docs/src/assets/jcge_core_logo_light.png" alt="JCGECore logo" height="150" align="left">
+  <source media="(prefers-color-scheme: light)" srcset="docs/src/assets/jcge_core_logo_light.png">
+  <img alt="JCGE Core logo" src="docs/src/assets/jcge_core_logo_light.png" height="150" align="left">
 </picture>
 
-# JCGECore
+# JCGECore.jl
 
 ## What is a CGE?
 A Computable General Equilibrium (CGE) model is a quantitative economic model that represents an economy as interconnected markets for goods and services, factors of production, institutions, and the rest of the world. It is calibrated with data (typically a Social Accounting Matrix) and solved numerically as a system of nonlinear equations until equilibrium conditions (zero-profit, market-clearing, and income-balance) hold within tolerance.
