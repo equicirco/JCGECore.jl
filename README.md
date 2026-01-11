@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/src/assets/jcge_core_logo_dark.png">
+    <img src="docs/src/assets/jcge_core_logo_light.png" alt="JCGECore logo" width="320">
+  </picture>
+</p>
+
 # JCGECore
 
 ## What is a CGE?
