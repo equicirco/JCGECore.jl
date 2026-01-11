@@ -15,3 +15,9 @@ makedocs(
         "API" => "api.md",
     ],
 )
+
+deploydocs(
+    repo = "github.com/equicirco/JCGECore.jl.git",
+    devbranch = "main",
+    versions = ["stable" => "v^", "v#.#", "dev" => "dev"],
+)
