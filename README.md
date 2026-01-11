@@ -1,9 +1,7 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/src/assets/jcge_core_logo_dark.png">
-    <img src="docs/src/assets/jcge_core_logo_light.png" alt="JCGECore logo" width="320">
-  </picture>
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/src/assets/jcge_core_logo_dark.png">
+  <img src="docs/src/assets/jcge_core_logo_light.png" alt="JCGECore logo" height="150" align="left">
+</picture>
 
 # JCGECore
 
