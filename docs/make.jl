@@ -6,8 +6,6 @@ makedocs(
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", "false") == "true",
         assets = [
-            "assets/jcge_core_logo_light.png",
-            "assets/jcge_core_logo_dark.png",
             "assets/logo-theme.js",
             "assets/logo.css",
         ],
