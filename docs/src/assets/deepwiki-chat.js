@@ -1,7 +1,7 @@
 (() => {
   const baseUrl = "https://mcp.deepwiki.com";
   const protocolVersion = "2024-11-05";
-  const defaultRepoName = null;
+  const defaultRepoName = "equicirco/JCGECore.jl";
 
   if (document.getElementById("dw-chat-root")) {
     return;
