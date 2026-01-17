@@ -139,7 +139,7 @@
     return defaultRepoName;
   };
 
-  const repoName = resolveRepoName();
+  const repoName = resolveRepoName() || defaultRepoName;
   const deepwikiUrl = repoName ? `https://deepwiki.com/${repoName}` : null;
   subtitleEl.textContent = repoName ? `DeepWiki for ${repoName}` : "DeepWiki repo not detected";
   subtitleEl.title = deepwikiUrl || "";
