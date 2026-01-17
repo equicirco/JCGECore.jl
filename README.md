@@ -10,10 +10,10 @@
 A Computable General Equilibrium (CGE) model is a quantitative economic model that represents an economy as interconnected markets for goods and services, factors of production, institutions, and the rest of the world. It is calibrated with data (typically a Social Accounting Matrix) and solved numerically as a system of nonlinear equations until equilibrium conditions (zero-profit, market-clearing, and income-balance) hold within tolerance.
 
 ## What is JCGE?
-JCGE is a block-based CGE modeling and execution framework in Julia. It defines a shared RunSpec structure and reusable blocks so models can be assembled, validated, solved, and compared consistently across packages.
+[JCGE](https://jcge.org) is a block-based CGE modeling and execution framework in Julia. It defines a shared RunSpec structure and reusable blocks so models can be assembled, validated, solved, and compared consistently across packages.
 
 ## What is this package?
-Canonical internal data model and interfaces for JCGE.
+Canonical internal data model and interfaces for [JCGE](https://jcge.org).
 
 ## Responsibilities
 - Core types for sets, mappings, benchmark containers, and RunSpec (run specification)
@@ -39,7 +39,7 @@ report.ok || println(report.categories)
 ```
 
 ## How to cite
-If you use the JCGE framework, please cite:
+If you use the [JCGE](https://jcge.org) framework, please cite:
 
 Boero, R. *JCGE - Julia Computable General Equilibrium Framework* [software], 2026.
 DOI: 10.5281/zenodo.18282436
