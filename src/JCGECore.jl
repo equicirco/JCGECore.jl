@@ -10,7 +10,8 @@ export AbstractBlock, calibrate!, build!, report
 export validate
 export validate_spec
 export getparam
-export EquationExpr, EIndex, EVar, EParam, EConst, EAdd, EMul, EPow, EDiv, ENeg, ESum, EProd, EEq, ERaw
+export EquationExpr, EIndex, EVar, EParam, EConst, EAdd, EMul, EPow, EDiv, ENeg, ELog
+export ESum, EProd, EEq, ELe, EGe, ERaw
 
 """
 Canonical set containers.
@@ -278,6 +279,13 @@ struct ENeg <: EquationExpr
 end
 
 """
+Natural logarithm expression.
+"""
+struct ELog <: EquationExpr
+    expr::EquationExpr
+end
+
+"""
 Summation expression over a domain.
 """
 struct ESum <: EquationExpr
@@ -299,6 +307,22 @@ end
 Equality expression.
 """
 struct EEq <: EquationExpr
+    lhs::EquationExpr
+    rhs::EquationExpr
+end
+
+"""
+Less-than-or-equal inequality expression.
+"""
+struct ELe <: EquationExpr
+    lhs::EquationExpr
+    rhs::EquationExpr
+end
+
+"""
+Greater-than-or-equal inequality expression.
+"""
+struct EGe <: EquationExpr
     lhs::EquationExpr
     rhs::EquationExpr
 end

@@ -10,6 +10,13 @@ Removed: For features removed in this release.
 Fixed: For any bug fixes.
 Security: For vulnerabilities.
 
+## [0.1.1] - 2026-05-20
+### Added
+- Equation-expression AST nodes for less-than-or-equal and greater-than-or-equal
+  inequality relations.
+- Natural logarithm expression node for backend-neutral objective and equation
+  definitions.
+
 ## [0.1.0] - 2026-01-11
 ### Added
 - Project layout and package boundaries.

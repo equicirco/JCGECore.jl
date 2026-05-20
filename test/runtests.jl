@@ -23,4 +23,9 @@ using JCGECore
     @test length(spec.model.blocks) == 1
     report = validate_spec(spec)
     @test report.ok
+
+    x = EVar(:x)
+    @test ELe(x, EConst(1.0)).lhs === x
+    @test EGe(x, EConst(0.0)).rhs.value == 0.0
+    @test ELog(x).expr === x
 end
