@@ -31,3 +31,22 @@ report.ok || error("Invalid RunSpec")
 
 Use `ScenarioSpec` to describe deltas relative to a baseline.
 
+## Equation expressions
+
+`JCGECore` provides a backend-neutral expression tree for model equations. Use
+`EVar`, `EParam`, `EConst`, `EAdd`, `EMul`, `EPow`, `EDiv`, `ENeg`, `ESum`, and
+`EProd` to build algebraic expressions.
+
+Relations are represented explicitly:
+
+```julia
+EEq(lhs, rhs)  # lhs == rhs
+ELe(lhs, rhs)  # lhs <= rhs
+EGe(lhs, rhs)  # lhs >= rhs
+```
+
+Natural logarithms can be represented with `ELog(expr)`, including in objective
+expressions compiled by downstream runtimes.
+
+`JCGECore` defines these symbolic nodes only. Solver-specific compilation is
+handled by runtime packages such as `JCGERuntime`.
