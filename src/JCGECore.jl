@@ -4,6 +4,7 @@ Core data model and block interfaces for JCGE.
 module JCGECore
 
 export Sets, Mappings, ModelSpec, ClosureSpec, ScenarioSpec, RunSpec
+export NUMERAIRE_KINDS
 export SectionSpec, RunSpecTemplate, section, template, build_spec
 export allowed_sections
 export AbstractBlock, calibrate!, build!, report
@@ -44,13 +45,37 @@ struct ModelSpec
 end
 
 """
+Supported kinds of numeraire reference.
+
+`:commodity` and `:factor` identify members of the canonical model sets.
+`:price_index` identifies a model-defined price-index variable. `:auto` retains
+the legacy behaviour: Core checks the label against commodity and factor sets.
+"""
+const NUMERAIRE_KINDS = (:auto, :commodity, :factor, :price_index)
+
+"""
 Closure choices for a run.
 
-Currently only numeraire is required.
+`numeraire` labels the price variable fixed by a model block. `kind` states
+whether that label refers to a commodity, factor, or model-defined price index.
+Core records and validates the reference; the implementing block registers the
+corresponding equation or fixed variable with the runtime.
+
+The one-argument constructor, `ClosureSpec(label)`, remains available and uses
+the legacy `:auto` validation mode.
 """
 struct ClosureSpec
     numeraire::Symbol
+    kind::Symbol
+
+    function ClosureSpec(numeraire::Symbol, kind::Symbol)
+        kind in NUMERAIRE_KINDS ||
+            error("Unsupported numeraire kind $(kind). Use one of $(NUMERAIRE_KINDS).")
+        return new(numeraire, kind)
+    end
 end
+
+ClosureSpec(numeraire::Symbol; kind::Symbol = :auto) = ClosureSpec(numeraire, kind)
 
 """
 Scenario changes relative to a baseline.
@@ -400,8 +425,19 @@ function validate_spec(spec::RunSpec; data=nothing)
     end
 
     num = spec.closure.numeraire
-    if !(num in spec.model.sets.commodities || num in spec.model.sets.factors)
-        push!(closure[:warnings], "Numeraire $(num) not found in commodities or factors")
+    kind = spec.closure.kind
+    if kind === :commodity
+        num in spec.model.sets.commodities ||
+            push!(closure[:warnings], "Commodity numeraire $(num) not found in commodities")
+    elseif kind === :factor
+        num in spec.model.sets.factors ||
+            push!(closure[:warnings], "Factor numeraire $(num) not found in factors")
+    elseif kind === :price_index
+        push!(closure[:notes],
+            "Price-index numeraire $(num) must be registered and fixed by a model block")
+    elseif !(num in spec.model.sets.commodities || num in spec.model.sets.factors)
+        push!(closure[:warnings],
+            "Numeraire $(num) not found in commodities or factors; specify kind=:price_index for a model-defined price index")
     end
 
     if data === nothing

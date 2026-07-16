@@ -27,6 +27,27 @@ report = validate_spec(spec)
 report.ok || error("Invalid RunSpec")
 ```
 
+## Numeraire
+
+`ClosureSpec` records the model's price normalization. Commodity and factor
+numeraires can use the legacy one-argument form:
+
+```julia
+ClosureSpec(:LAB)
+```
+
+Use an explicit kind when the numeraire is a model-defined price index. The
+model must include a block that defines and fixes the chosen index to the
+normalization value.
+
+```julia
+ClosureSpec(:EU_CPI; kind = :price_index)  # for a European consumption-price index
+ClosureSpec(:US_CPI; kind = :price_index)  # for a United States consumption-price index
+```
+
+This lets validation distinguish a price-index numeraire from a missing member
+of the commodity or factor sets.
+
 ## Scenarios
 
 Use `ScenarioSpec` to describe deltas relative to a baseline.

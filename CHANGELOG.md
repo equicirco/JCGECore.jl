@@ -10,6 +10,12 @@ Removed: For features removed in this release.
 Fixed: For any bug fixes.
 Security: For vulnerabilities.
 
+## [0.1.2] - Unreleased
+### Added
+- Explicit numeraire kinds in `ClosureSpec`, including model-defined
+  price-index numeraires with validation that does not misclassify them as
+  missing commodities or factors.
+
 ## [0.1.1] - 2026-05-20
 ### Added
 - Equation-expression AST nodes for less-than-or-equal and greater-than-or-equal
