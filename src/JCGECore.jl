@@ -3,8 +3,9 @@ Core data model and block interfaces for JCGE.
 """
 module JCGECore
 
-export Sets, Mappings, ModelSpec, ClosureSpec, ScenarioSpec, RunSpec
-export NUMERAIRE_KINDS
+export Sets, Mappings, ModelSpec, ClosureCondition, ClosureSpec, ScenarioSpec, RunSpec
+export NUMERAIRE_KINDS, CLOSURE_CONDITION_ROLES
+export closure_condition_role, is_enforced, accounting_checks
 export SectionSpec, RunSpecTemplate, section, template, build_spec
 export allowed_sections
 export AbstractBlock, calibrate!, build!, report
@@ -54,12 +55,56 @@ the legacy behaviour: Core checks the label against commodity and factor sets.
 const NUMERAIRE_KINDS = (:auto, :commodity, :factor, :price_index)
 
 """
+Stable identifier for an equation whose closure role is selected by a model.
+
+`block` and `tag` identify the emitting block and equation family; `indices`
+identify one equation within that family. A condition with no indices denotes
+one aggregate identity.
+"""
+struct ClosureCondition
+    block::Symbol
+    tag::Symbol
+    indices::Tuple{Vararg{Symbol}}
+
+    function ClosureCondition(block::Symbol, tag::Symbol,
+        indices::Tuple{Vararg{Symbol}})
+        return new(block, tag, indices)
+    end
+end
+
+ClosureCondition(block::Symbol, tag::Symbol, indices::Symbol...) =
+    ClosureCondition(block, tag, indices)
+
+"""
+Supported roles for closure conditions.
+
+`:enforce` compiles the equation as part of the numerical equilibrium system.
+`:accounting_check` preserves it as a reported post-solution identity without
+using it to constrain the solver.
+"""
+const CLOSURE_CONDITION_ROLES = (:enforce, :accounting_check)
+
+function _condition_roles(value)
+    roles = Dict{ClosureCondition,Symbol}()
+    for (condition, role) in value
+        condition isa ClosureCondition ||
+            error("Closure condition keys must be ClosureCondition values.")
+        role isa Symbol && role in CLOSURE_CONDITION_ROLES ||
+            error("Unsupported closure-condition role $(role). Use one of $(CLOSURE_CONDITION_ROLES).")
+        roles[condition] = role
+    end
+    return roles
+end
+
+"""
 Closure choices for a run.
 
 `numeraire` labels the price variable fixed by a model block. `kind` states
 whether that label refers to a commodity, factor, or model-defined price index.
 Core records and validates the reference; the implementing block registers the
-corresponding equation or fixed variable with the runtime.
+corresponding equation or fixed variable with the runtime. `condition_roles`
+can designate selected, otherwise redundant identities as
+`:accounting_check`; all undeclared conditions remain enforced.
 
 The one-argument constructor, `ClosureSpec(label)`, remains available and uses
 the legacy `:auto` validation mode.
@@ -67,15 +112,49 @@ the legacy `:auto` validation mode.
 struct ClosureSpec
     numeraire::Symbol
     kind::Symbol
+    condition_roles::Dict{ClosureCondition,Symbol}
 
-    function ClosureSpec(numeraire::Symbol, kind::Symbol)
+    function ClosureSpec(numeraire::Symbol, kind::Symbol,
+        condition_roles::Dict{ClosureCondition,Symbol})
         kind in NUMERAIRE_KINDS ||
             error("Unsupported numeraire kind $(kind). Use one of $(NUMERAIRE_KINDS).")
-        return new(numeraire, kind)
+        return new(numeraire, kind, copy(condition_roles))
     end
 end
 
-ClosureSpec(numeraire::Symbol; kind::Symbol = :auto) = ClosureSpec(numeraire, kind)
+ClosureSpec(numeraire::Symbol, kind::Symbol;
+    condition_roles=Dict{ClosureCondition,Symbol}()) =
+    ClosureSpec(numeraire, kind, _condition_roles(condition_roles))
+
+ClosureSpec(numeraire::Symbol;
+    kind::Symbol = :auto,
+    condition_roles=Dict{ClosureCondition,Symbol}()) =
+    ClosureSpec(numeraire, kind; condition_roles=condition_roles)
+
+"""
+    closure_condition_role(closure, block, tag, indices...) -> Symbol
+
+Return the role of one equation identity under `closure`. Undeclared
+conditions are enforced by default.
+"""
+function closure_condition_role(closure::ClosureSpec, block::Symbol,
+    tag::Symbol, indices::Symbol...)
+    condition = ClosureCondition(block, tag, indices...)
+    return get(closure.condition_roles, condition, :enforce)
+end
+
+"""Return whether an equation identity remains a solver constraint."""
+is_enforced(closure::ClosureSpec, block::Symbol, tag::Symbol,
+    indices::Symbol...) =
+    closure_condition_role(closure, block, tag, indices...) === :enforce
+
+"""Return all closure conditions designated as post-solution accounting checks."""
+function accounting_checks(closure::ClosureSpec)
+    checks = [condition for (condition, role) in closure.condition_roles
+              if role === :accounting_check]
+    return sort(checks; by=condition ->
+        (String(condition.block), String(condition.tag), join(string.(condition.indices), "\u0001")))
+end
 
 """
 Scenario changes relative to a baseline.
@@ -438,6 +517,12 @@ function validate_spec(spec::RunSpec; data=nothing)
     elseif !(num in spec.model.sets.commodities || num in spec.model.sets.factors)
         push!(closure[:warnings],
             "Numeraire $(num) not found in commodities or factors; specify kind=:price_index for a model-defined price index")
+    end
+    for condition in accounting_checks(spec.closure)
+        suffix = isempty(condition.indices) ? "" :
+                 " [$(join(string.(condition.indices), ", "))]"
+        push!(closure[:notes],
+            "Accounting check: $(condition.block).$(condition.tag)$(suffix)")
     end
 
     if data === nothing

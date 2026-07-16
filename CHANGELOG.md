@@ -10,6 +10,12 @@ Removed: For features removed in this release.
 Fixed: For any bug fixes.
 Security: For vulnerabilities.
 
+## [0.1.3] - 2026-07-16
+### Added
+- Generic closure-condition roles. Models can identify stable equation keys as
+  solver-enforced conditions or post-solution accounting checks while retaining
+  the same documented equation inventory.
+
 ## [0.1.2] - 2026-07-16
 ### Added
 - Explicit numeraire kinds in `ClosureSpec`, including model-defined

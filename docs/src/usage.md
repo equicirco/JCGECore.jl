@@ -48,6 +48,31 @@ ClosureSpec(:US_CPI; kind = :price_index)  # for a United States consumption-pri
 This lets validation distinguish a price-index numeraire from a missing member
 of the commodity or factor sets.
 
+## Closure conditions
+
+Some equilibrium identities are implied by the rest of a model's market and
+budget conditions. Keep these identities in the equation inventory while
+designating them as post-solution accounting checks in the model closure. The
+condition key contains the emitting block name, equation tag, and any stable
+indices; every condition not listed remains enforced.
+
+```julia
+redundant_market = ClosureCondition(:regional_market, :composite_market, :g1, :r1)
+pool_identity = ClosureCondition(:investment_pool, :pool_clearing)
+
+closure = ClosureSpec(
+    :P_HH_COMMON;
+    kind = :price_index,
+    condition_roles = Dict(
+        redundant_market => :accounting_check,
+        pool_identity => :accounting_check,
+    ),
+)
+```
+
+`closure_condition_role(closure, ...)` and `is_enforced(closure, ...)` let
+blocks and runtimes apply the model's declared closure consistently.
+
 ## Scenarios
 
 Use `ScenarioSpec` to describe deltas relative to a baseline.

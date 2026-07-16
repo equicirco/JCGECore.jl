@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 title: JCGECore.jl - Core building blocks and interfaces for the JCGE computable general equilibrium (CGE) modeling ecosystem in Julia.
 message: >-
-  v0.1.2 - Explicit support for model-defined price-index numeraires in closure specifications.
+  v0.1.3 - Adds generic closure-condition roles for solver constraints and post-solution accounting checks.
 type: software
 doi: 10.5281/zenodo.18214951
 authors:
